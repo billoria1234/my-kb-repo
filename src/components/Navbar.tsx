@@ -1,11 +1,16 @@
-// components/Navbar.tsx
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Category } from '@prisma/client';
 import { ShoppingCart, User, Search, Menu, X } from 'lucide-react';
+
+// ✅ Manually define the Category type
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
 
 export default function Navbar() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -35,16 +40,13 @@ export default function Navbar() {
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top Bar */}
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-2xl font-bold text-blue-600">
               MediCare
             </Link>
           </div>
 
-          {/* Desktop Search */}
           <div className="hidden md:flex flex-1 max-w-md mx-6">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative">
@@ -65,32 +67,20 @@ export default function Navbar() {
             </form>
           </div>
 
-          {/* Navigation Links */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link
-              href="/cart"
-              className="text-gray-700 hover:text-blue-600 flex items-center"
-            >
+            <Link href="/cart" className="text-gray-700 hover:text-blue-600 flex items-center">
               <span>My Orders</span>
             </Link>
-            <Link
-              href="/cart"
-              className="text-gray-700 hover:text-blue-600 flex items-center relative"
-            >
+            <Link href="/cart" className="text-gray-700 hover:text-blue-600 flex items-center relative">
               <ShoppingCart size={20} />
               <span className="ml-1">Cart</span>
-              {/* Cart count badge would go here */}
             </Link>
-            <Link
-              href="/account"
-              className="text-gray-700 hover:text-blue-600 flex items-center"
-            >
+            <Link href="/account" className="text-gray-700 hover:text-blue-600 flex items-center">
               <User size={20} />
               <span className="ml-1">Account</span>
             </Link>
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -101,7 +91,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Category Navigation */}
         <div className="hidden md:flex justify-center space-x-6 py-2 border-t border-gray-100">
           {categories.map((category) => (
             <Link
@@ -119,7 +108,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-4 py-3">

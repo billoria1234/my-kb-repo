@@ -1,4 +1,3 @@
-// app/signup/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -113,7 +112,7 @@ export default function SignupPage() {
 
       <div className="mt-4 text-center">
         <p className="text-sm text-gray-600">
-          Already have an account?{" "}
+          Already have an account&#63;&nbsp;
           <Link href="/signin" className="text-blue-600 hover:underline">
             Sign in
           </Link>

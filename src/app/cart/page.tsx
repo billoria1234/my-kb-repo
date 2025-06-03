@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -88,9 +89,33 @@ export default function CartPage() {
   if (loading) return <p className="p-4">Loading cart...</p>;
   if (cartItems.length === 0)
     return (
-      <p className="p-4">
-        {orderSuccess ? '🎉 Order placed successfully!' : 'Your cart is empty.'}
-      </p>
+      <div className="flex flex-col items-center justify-center p-8">
+        {orderSuccess ? (
+          <>
+            <Image 
+              src="/order-success.svg" 
+              alt="Order success" 
+              width={200} 
+              height={200}
+              className="mb-4"
+            />
+            <h2 className="text-2xl font-bold text-green-600 mb-2">🎉 Order placed successfully!</h2>
+            <p className="text-gray-600">Your items will be shipped soon.</p>
+          </>
+        ) : (
+          <>
+            <Image 
+              src="/empty-cart.svg" 
+              alt="Empty cart" 
+              width={200} 
+              height={200}
+              className="mb-4"
+            />
+            <h2 className="text-xl font-medium">Your cart is empty</h2>
+            <p className="text-gray-600">Start shopping to add items to your cart</p>
+          </>
+        )}
+      </div>
     );
 
   return (
@@ -103,11 +128,15 @@ export default function CartPage() {
             key={id}
             className="flex items-start gap-4 border rounded-lg p-4 shadow-sm"
           >
-            <img
-              src={product.images[0]}
-              alt={product.name}
-              className="w-28 h-28 object-cover rounded-md"
-            />
+            <div className="relative w-28 h-28">
+              <Image
+                src={product.images[0]}
+                alt={product.name}
+                fill
+                className="object-cover rounded-md"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              />
+            </div>
             <div className="flex-1">
               <h2 className="text-xl font-medium">{product.name}</h2>
               <p className="text-gray-700">Price: ₹{product.price}</p>
@@ -118,7 +147,7 @@ export default function CartPage() {
             </div>
             <button
               onClick={() => handleDelete(id)}
-              className="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+              className="text-sm bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition-colors"
             >
               Remove
             </button>
@@ -134,8 +163,8 @@ export default function CartPage() {
       <div className="mt-6 text-right">
         <button
           onClick={handlePlaceOrder}
-          disabled={placingOrder}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded disabled:opacity-50"
+          disabled={placingOrder || cartItems.length === 0}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-3 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {placingOrder ? 'Placing Order...' : 'Place Order'}
         </button>

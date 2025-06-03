@@ -1,3 +1,5 @@
+// File: /prisma/seed.ts
+
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -5,16 +7,18 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting seeding...');
 
-  // Clear existing data
+  // Clear existing data in order to avoid FK constraint errors
   console.log('🧹 Cleaning up old data...');
+  await prisma.cartItem.deleteMany();    // Delete child records first
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
   console.log('✅ Old data removed');
 
-  // Create the MEDICINE category
+  // Create the MEDICINE category with slug
   const medicineCategory = await prisma.category.create({
     data: {
       name: 'MEDICINE',
+      slug: 'medicine',
     },
   });
 
@@ -67,7 +71,7 @@ async function main() {
     'Electral Powder',
     'Hydrocortisone Cream',
     'Sodium Bicarbonate Tabs',
-    'Neomycin Cream'
+    'Neomycin Cream',
   ];
 
   console.log('📦 Creating products...');

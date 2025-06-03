@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 interface Product {
   id: string;
@@ -62,17 +63,22 @@ export default function ProductList() {
           key={product.id}
           className="border rounded-xl shadow-md p-5 bg-white flex flex-col justify-between hover:shadow-lg transition-shadow"
         >
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className="h-56 w-full object-cover mb-4 rounded-lg"
-          />
+          <div className="relative h-56 w-full mb-4 rounded-lg overflow-hidden">
+            <Image
+              src={product.images[0]}
+              alt={product.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={products.indexOf(product) < 3} // Prioritize first 3 images
+            />
+          </div>
           <h2 className="text-xl font-semibold mb-1 truncate">{product.name}</h2>
           <p className="text-gray-700 mb-4 text-lg">₹{product.price}</p>
           <button
             onClick={() => handleAddToCart(product.id)}
             disabled={loadingProductId === product.id}
-            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
           >
             {loadingProductId === product.id ? 'Adding...' : 'Add to Cart'}
           </button>
