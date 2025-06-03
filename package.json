@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "seed": "prisma db seed",
-    "seed:direct": "ts-node prisma/seed.ts"
+    "seed:direct": "ts-node prisma/seed.ts",
+    "generate": "prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -33,14 +34,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",
-    "@types/node": "^20.11.30",     
-    "@types/react": "^18.2.44",      
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.44",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.0.0",
     "eslint-config-next": "15.1.8",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "ts-node": "^10.9.2",
-    "typescript": "^5.4.5"         
+    "typescript": "^5.4.5"
   }
 }
