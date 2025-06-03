@@ -1,7 +1,7 @@
-// src/lib/authOptions.ts
+// src/authOptions.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
-import { prisma } from "@/lib/prisma"; // adjust if your path is different
+import { prisma } from "@/lib/prisma"; // adjust if your path differs
 import bcrypt from "bcryptjs";
 
 export const authOptions: AuthOptions = {
@@ -12,7 +12,7 @@ export const authOptions: AuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials.password) return null;
 
         // Look up user in the database
