@@ -1,13 +1,12 @@
-"use client";
 import NextAuth from "next-auth";
 import type { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
-interface Credentials {
-  email: string;
-  password: string;
+// Validate environment variables
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error("NEXTAUTH_SECRET is not defined in environment variables");
 }
 
 export const authOptions: NextAuthOptions = {
@@ -29,7 +28,7 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (!user) {
-            throw new Error("Invalid credentials");
+            throw new Error("User not found");
           }
 
           const passwordValid = await bcrypt.compare(
@@ -38,13 +37,13 @@ export const authOptions: NextAuthOptions = {
           );
 
           if (!passwordValid) {
-            throw new Error("Invalid credentials");
+            throw new Error("Invalid password");
           }
 
           return {
             id: user.id,
             email: user.email,
-            name: user.username || user.email.split('@')[0],
+            name: user.username || user.email.split("@")[0],
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -56,7 +55,6 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -79,9 +77,11 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/signin",
     error: "/auth/error",
+    signOut: "/",
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
 
+// Export NextAuth handler functions
 export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);

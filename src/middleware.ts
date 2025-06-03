@@ -1,10 +1,19 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+// src/middleware.ts
+import { NextResponse, NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
-  // Add common headers or auth checks here
-  const response = NextResponse.next();
-  response.headers.set('x-version', '1.0');
-  return response;
+export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+};
+
+export default async function middleware(req: NextRequest) {
+  const sessionCookie = req.cookies.get('next-auth.session-token') 
+                      || req.cookies.get('__Secure-next-auth.session-token');
+
+  const { pathname } = req.nextUrl;
+
+  if (pathname === '/' || sessionCookie) {
+    return NextResponse.next();
+  }
+
+  return NextResponse.redirect(new URL('/', req.url));
 }
