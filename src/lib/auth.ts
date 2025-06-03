@@ -1,7 +1,8 @@
 "use client";
+import NextAuth from "next-auth";
 import type { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import{ prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
 interface Credentials {
@@ -14,26 +15,23 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "credentials",
       credentials: {
-        email: { label: "Email", type: "email" }, // Changed to email type
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials): Promise<User | null> {
         try {
-          // Validate credentials
           if (!credentials?.email || !credentials?.password) {
             throw new Error("Email and password are required");
           }
 
-          // Find user
           const user = await prisma.user.findUnique({
-            where: { email: credentials.email.toLowerCase().trim() }, // Normalize email
+            where: { email: credentials.email.toLowerCase().trim() },
           });
 
           if (!user) {
             throw new Error("Invalid credentials");
           }
 
-          // Verify password
           const passwordValid = await bcrypt.compare(
             credentials.password,
             user.password
@@ -43,11 +41,10 @@ export const authOptions: NextAuthOptions = {
             throw new Error("Invalid credentials");
           }
 
-          // Return user object
           return {
             id: user.id,
             email: user.email,
-            name: user.username || user.email.split('@')[0], // Fallback to email prefix if no username
+            name: user.username || user.email.split('@')[0],
           };
         } catch (error) {
           console.error("Authentication error:", error);
@@ -56,13 +53,11 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
+    maxAge: 30 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
   },
-
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -81,12 +76,14 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-
   pages: {
     signIn: "/signin",
-    error: "/auth/error", // Add error page
+    error: "/auth/error",
   },
-
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development", // Enable debug in development
+  debug: process.env.NODE_ENV === "development",
 };
+
+// Export the handlers for NextAuth.js v5
+const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+export { handlers, auth, signIn, signOut };
