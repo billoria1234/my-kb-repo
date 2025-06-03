@@ -55,8 +55,8 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60,
-    updateAge: 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -84,6 +84,4 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
 };
 
-// Export the handlers for NextAuth.js v5
-const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
-export { handlers, auth, signIn, signOut };
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
