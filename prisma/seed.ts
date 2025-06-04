@@ -5,23 +5,26 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting seeding...');
+  console.log('🌱 Starting database seeding...');
 
-  // Clear existing data in order to avoid FK constraint errors
-  console.log('🧹 Cleaning up old data...');
-  await prisma.cartItem.deleteMany();    // Delete child records first
+  // Step 1: Clear existing data
+  console.log('🧹 Cleaning up existing data...');
+  await prisma.cartItem.deleteMany(); // Delete child records first to avoid FK issues
   await prisma.product.deleteMany();
   await prisma.category.deleteMany();
-  console.log('✅ Old data removed');
+  console.log('✅ Data cleanup complete.');
 
-  // Create the MEDICINE category with slug
+  // Step 2: Create category
+  console.log('📁 Creating MEDICINE category...');
   const medicineCategory = await prisma.category.create({
     data: {
       name: 'MEDICINE',
       slug: 'medicine',
     },
   });
+  console.log('✅ Category created.');
 
+  // Step 3: Product list
   const products = [
     'Paracetamol 500mg',
     'Ibuprofen 400mg',
@@ -74,27 +77,31 @@ async function main() {
     'Neomycin Cream',
   ];
 
-  console.log('📦 Creating products...');
+  const dummyImageUrl = 'https://dummyimage.com/300x200/cccccc/000000.png&text=Product+Image';
+
+  // Step 4: Insert products
+  console.log(`📦 Creating ${products.length} products...`);
   for (const name of products) {
     await prisma.product.create({
       data: {
         name,
-        description: `Description for ${name}`,
-        price: parseFloat((Math.random() * 50 + 5).toFixed(2)),
-        stock: Math.floor(Math.random() * 200 + 10),
+        description: `This is a detailed description for ${name}.`,
+        price: parseFloat((Math.random() * 50 + 5).toFixed(2)), // random price between 5 - 55
+        stock: Math.floor(Math.random() * 200 + 10), // random stock between 10 - 210
         prescriptionRequired: Math.random() > 0.5,
-        images: [`https://via.placeholder.com/300x200?text=${encodeURIComponent(name)}`],
+        images: [dummyImageUrl],
         category: {
           connect: { id: medicineCategory.id },
         },
       },
     });
-    console.log(`   ✔ Created ${name}`);
+    console.log(`   ✔ Product created: ${name}`);
   }
 
-  console.log(`🎉 Successfully seeded ${products.length} products`);
+  console.log(`🎉 Successfully seeded ${products.length} products.`);
 }
 
+// Execute the seed script
 main()
   .catch((e) => {
     console.error('\n❌ Seeding failed!');
@@ -103,5 +110,5 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-    console.log('🔌 Disconnected from database');
+    console.log('🔌 Disconnected from the database.');
   });
