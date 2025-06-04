@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
-
 import bcrypt from "bcryptjs";
 
 // Validate environment variables
@@ -84,5 +83,5 @@ export const authOptions: NextAuthOptions = {
   debug: process.env.NODE_ENV === "development",
 };
 
-// Export NextAuth handler functions
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
+// Export default NextAuth handler function for your API route
+export default NextAuth(authOptions);

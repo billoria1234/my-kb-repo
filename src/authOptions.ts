@@ -1,7 +1,7 @@
 // src/authOptions.ts
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AuthOptions } from "next-auth";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/prisma";
 import bcrypt from "bcryptjs";
 
 export const authOptions: AuthOptions = {
