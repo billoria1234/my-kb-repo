@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "./prisma";
+
 import bcrypt from "bcryptjs";
 
 // Validate environment variables
