@@ -2,7 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/prisma';
+import { prisma } from '../../../prisma';
+
 
 // Get cart items
 export async function GET(req: NextRequest) {

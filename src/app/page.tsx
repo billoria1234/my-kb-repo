@@ -1,13 +1,18 @@
 // app/page.tsx
-
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import ProductList from "@/components/ProductList";
+import ProductList from "@/components/ProductList"; // must be defined and render data
 
 export default async function Page() {
-  const session = await getServerSession(authOptions);
+  let session = null;
+
+  try {
+    session = await getServerSession(authOptions);
+  } catch (error) {
+    console.error("Error getting session:", error);
+  }
 
   return (
     <main className="min-h-screen p-8">
@@ -15,10 +20,6 @@ export default async function Page() {
         <h1 className="text-4xl font-bold mb-8">
           Welcome to Our E-commerce Store
         </h1>
-
-        <Link href="/cart">
-          <Button>View Cart</Button>
-        </Link>
 
         {session ? (
           <div className="text-center mb-8">
@@ -50,7 +51,7 @@ export default async function Page() {
       <section className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold mb-6">Featured Products</h2>
         <div className="border-4 border-yellow-400 p-4">
-          <ProductList />
+          <ProductList /> {/* Ensure this component works without crashing */}
         </div>
       </section>
     </main>

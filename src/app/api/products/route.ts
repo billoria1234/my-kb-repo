@@ -1,7 +1,7 @@
 // File: app/api/products/route.ts
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; // ✅ use a shared Prisma client instance
+import { prisma } from '../../../prisma'; // ✅ use a shared Prisma client instance
 
 export async function GET() {
   try {
