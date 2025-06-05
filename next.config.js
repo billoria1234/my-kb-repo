@@ -1,4 +1,6 @@
+// next.config.js
 // @ts-check
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
@@ -20,6 +22,7 @@ const nextConfig = {
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
     STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    DATABASE_URL: process.env.DATABASE_URL,
   },
 
   webpack: (config) => {
@@ -73,4 +76,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
