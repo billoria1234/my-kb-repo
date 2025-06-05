@@ -1,9 +1,7 @@
 // File: app/api/products/route.ts
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma'; // ✅ use a shared Prisma client instance
 
 export async function GET() {
   try {
@@ -15,8 +13,13 @@ export async function GET() {
         images: true,
       },
     });
+
     return NextResponse.json(products);
   } catch (error) {
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    console.error("Error fetching products:", error); // ✅ log the error
+    return NextResponse.json(
+      { message: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
