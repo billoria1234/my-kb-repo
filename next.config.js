@@ -19,20 +19,29 @@ const nextConfig = {
 
   reactStrictMode: true,
 
-  // Environment variables configuration
+  // Public environment variables (exposed to client-side)
   env: {
     API_BASE_URL: process.env.API_BASE_URL,
     STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+  },
+
+  // Server-only environment variables
+  serverRuntimeConfig: {
     DATABASE_URL: process.env.DATABASE_URL,
   },
 
-  // Webpack configuration
+  publicRuntimeConfig: {
+    // Put safe public variables here if needed
+  },
+
   webpack: (config) => {
-    config.resolve.fallback = { fs: false, path: false };
+    config.resolve.fallback = {
+      fs: false,
+      path: false,
+    };
     return config;
   },
 
-  // Experimental features
   experimental: {
     turbo: {
       loaders: {
@@ -46,10 +55,10 @@ const nextConfig = {
         ],
       },
     },
+    // @ts-ignore
     serverExternalPackages: ['@prisma/client'],
   },
 
-  // Redirects
   async redirects() {
     return [
       {
@@ -60,7 +69,6 @@ const nextConfig = {
     ];
   },
 
-  // Security headers
   async headers() {
     return [
       {

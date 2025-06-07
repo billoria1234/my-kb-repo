@@ -1,7 +1,7 @@
 // File: app/api/products/route.ts
 
 import { NextResponse } from 'next/server';
-import { prisma } from '../../../prisma'; // ✅ update path if different
+import prisma  from '@/lib/db'; // ✅ make sure this is the correct path to your Prisma instance
 
 export async function GET() {
   try {
@@ -21,7 +21,7 @@ export async function GET() {
   } catch (error) {
     console.error('❌ API Error:', error);
     return NextResponse.json(
-      { message: 'Internal Server Error', error: String(error) },
+      { error: 'Failed to fetch products', details: String(error) },
       { status: 500 }
     );
   }
