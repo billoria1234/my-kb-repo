@@ -1,17 +1,22 @@
-// components/auth/SignUpForm.tsx
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../../ui/input";
-import { Label } from "../ui/label";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
-export function SignUpForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [error, setError] = useState("");
+interface FormData {
+  email: string;
+  password: string;
+  username: string;
+}
+
+export default function SignUpForm() {
+  const [formData, setFormData] = useState<FormData>({
+    email: "",
+    password: "",
+    username: ""
+  });
+  const [error, setError] = useState<string>("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,62 +24,99 @@ export function SignUpForm() {
     setError("");
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      // 1. First create the user via our custom endpoint
+      const signupResponse = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify(formData)
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || "Sign up failed");
+      // First check if response is JSON
+      const contentType = signupResponse.headers.get("content-type");
+      let errorMessage = "Signup failed";
+
+      if (contentType?.includes("application/json")) {
+        const errorData = await signupResponse.json();
+        errorMessage = errorData.message || errorMessage;
+      } else {
+        const text = await signupResponse.text();
+        errorMessage = text || errorMessage;
       }
 
-      router.push("/signin");
+      if (!signupResponse.ok) {
+        throw new Error(errorMessage);
+      }
+
+      // 2. Then automatically log the user in
+      const loginResult = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false
+      });
+
+      if (loginResult?.error) {
+        throw new Error(loginResult.error);
+      }
+
+      // 3. Redirect to protected page
+      router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign up failed");
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
+        console.error("Signup error:", err);
+      }
     }
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {error && <div className="text-red-500">{error}</div>}
+    <form onSubmit={handleSubmit}>
       <div>
-        <Label htmlFor="name">Name</Label>
-        <Input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
+        <label htmlFor="email">Email:</label>
+        <input
           type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          id="email"
+          name="email"
+          value={formData.email}
+          onChange={handleInputChange}
           required
         />
       </div>
       <div>
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+        <label htmlFor="username">Username:</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          value={formData.username}
+          onChange={handleInputChange}
           required
-          minLength={6}
         />
       </div>
-      <Button type="submit" className="w-full">
-        Sign Up
-      </Button>
+      <div>
+        <label htmlFor="password">Password:</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          value={formData.password}
+          onChange={handleInputChange}
+          required
+        />
+      </div>
+      <button type="submit">Sign Up</button>
+      {error && <div style={{ color: "red", marginTop: "1rem" }}>{error}</div>}
     </form>
   );
 }

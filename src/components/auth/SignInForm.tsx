@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Input } from "../../ui/input";
+import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 
 export function SignInForm() {

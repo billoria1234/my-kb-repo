@@ -1,19 +1,44 @@
 // src/middleware.ts
 import { NextResponse, NextRequest } from 'next/server';
 
+const publicRoutes = [
+  '/',
+  '/signin',
+  '/signup',  // Make sure signup is explicitly listed
+  '/auth/error',
+  '/api/auth',
+  '/_next',
+  '/favicon.ico'
+];
+
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ['/((?!_next/static|_next/image|images|fonts|icons|favicon.ico).*)'],
 };
 
 export default async function middleware(req: NextRequest) {
-  const sessionCookie = req.cookies.get('next-auth.session-token') 
-                      || req.cookies.get('__Secure-next-auth.session-token');
-
   const { pathname } = req.nextUrl;
 
-  if (pathname === '/' || sessionCookie) {
+  // Skip middleware for public routes
+  if (publicRoutes.some(route => 
+      pathname === route || 
+      pathname.startsWith(route) ||
+      pathname.startsWith('/_next/')
+  )) {
     return NextResponse.next();
   }
 
-  return NextResponse.redirect(new URL('/', req.url));
+  // Rest of your middleware logic...
+  const sessionToken = req.cookies.get(
+    process.env.NODE_ENV === 'production' 
+      ? '__Secure-next-auth.session-token' 
+      : 'next-auth.session-token'
+  )?.value;
+
+  if (!sessionToken) {
+    const signInUrl = new URL('/signin', req.url);
+    signInUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  return NextResponse.next();
 }

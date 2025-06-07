@@ -1,87 +1,56 @@
+// File: src/components/ProductList.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 
-interface Product {
-  id: string;
+type Product = {
+  id: number;
   name: string;
   price: number;
   images: string[];
-}
+};
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loadingProductId, setLoadingProductId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch('/api/products');
-        if (!res.ok) throw new Error('Failed to fetch products');
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch products');
+        }
+
         const data = await res.json();
         setProducts(data);
-      } catch (error) {
-        console.error(error);
+      } catch (err: any) {
+        console.error('Error fetching products:', err);
+        setError(err.message || 'Something went wrong');
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchProducts();
   }, []);
 
-  const handleAddToCart = async (productId: string) => {
-    setLoadingProductId(productId);
-    try {
-      const res = await fetch('/api/cart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId, quantity: 1 }),
-      });
-
-      if (!res.ok) {
-        let errMsg = 'Failed to add to cart';
-        try {
-          const err = await res.json();
-          errMsg = err.message || err.error || errMsg;
-        } catch {
-          // JSON parse failed, fallback to default message
-        }
-        throw new Error(errMsg);
-      }
-
-      alert('Item added to cart!');
-    } catch (error: any) {
-      alert(error.message || 'Error adding to cart');
-    } finally {
-      setLoadingProductId(null);
-    }
-  };
+  if (loading) return <p>Loading products...</p>;
+  if (error) return <p className="text-red-600">Error: {error}</p>;
 
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,_minmax(280px,_1fr))] gap-6 p-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {products.map((product) => (
-        <div
-          key={product.id}
-          className="border rounded-xl shadow-md p-5 bg-white flex flex-col justify-between hover:shadow-lg transition-shadow"
-        >
-          <div className="relative h-56 w-full mb-4 rounded-lg overflow-hidden">
-            <Image
-              src={product.images[0]}
-              alt={product.name}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              priority={products.indexOf(product) < 3} // Prioritize first 3 images
-            />
-          </div>
-          <h2 className="text-xl font-semibold mb-1 truncate">{product.name}</h2>
-          <p className="text-gray-700 mb-4 text-lg">₹{product.price}</p>
-          <button
-            onClick={() => handleAddToCart(product.id)}
-            disabled={loadingProductId === product.id}
-            className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors"
-          >
-            {loadingProductId === product.id ? 'Adding...' : 'Add to Cart'}
-          </button>
+        <div key={product.id} className="border p-4 rounded shadow">
+          <img
+            src={product.images?.[0] || 'https://via.placeholder.com/300x200'}
+            alt={product.name}
+            className="w-full h-40 object-cover mb-2"
+          />
+          <h2 className="font-bold">{product.name}</h2>
+          <p>₹{product.price}</p>
         </div>
       ))}
     </div>

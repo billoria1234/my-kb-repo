@@ -29,12 +29,14 @@
     "lucide-react": "^0.511.0",
     "next": "^15.3.3",
     "next-auth": "^4.24.11",
+    "next-themes": "^0.4.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.0.0",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.11.30",
     "@types/react": "^18.2.44",
     "autoprefixer": "^10.4.21",

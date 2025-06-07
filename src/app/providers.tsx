@@ -1,13 +1,15 @@
-// src/components/providers.tsx
-'use client'
 
-import { SessionProvider } from 'next-auth/react'
-import { authOptions } from '@/lib/auth'
 
-export function Providers({ children }: { children: React.ReactNode }) {
+// src/providers.tsx (or src/app/providers.tsx)
+"use client";
+
+import { SessionProvider } from "next-auth/react";
+import { type ReactNode } from "react";
+
+export function Providers({ children }: { children: ReactNode }) {
   return (
-    <SessionProvider session={null} basePath="/api/auth">
+    <SessionProvider>
       {children}
     </SessionProvider>
-  )
+  );
 }
