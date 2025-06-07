@@ -1,28 +1,21 @@
-// File: app/api/products/route.ts
-
-import { NextResponse } from 'next/server';
-import prisma  from '@/lib/db'; // ✅ make sure this is the correct path to your Prisma instance
+// app/api/products/route.ts
+import { NextResponse } from 'next/server'
+import prisma from '@/lib/db'
 
 export async function GET() {
   try {
-    console.log('➡️ GET /api/products called');
-
-    const products = await prisma.product.findMany({
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        images: true,
-      },
-    });
-
-    console.log(`✅ Found ${products.length} products`);
-    return NextResponse.json(products);
+    // Verify connection
+    await prisma.$connect()
+    
+    const products = await prisma.product.findMany()
+    return NextResponse.json(products)
   } catch (error) {
-    console.error('❌ API Error:', error);
+    console.error('Database error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch products', details: String(error) },
+      { error: 'Failed to fetch products', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
-    );
+    )
+  } finally {
+    await prisma.$disconnect()
   }
 }

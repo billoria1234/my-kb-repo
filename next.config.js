@@ -3,6 +3,20 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+
+  // Public environment variables (exposed to client)
+  env: {
+    API_BASE_URL: process.env.API_BASE_URL,
+    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
+    DATABASE_URL: process.env.DATABASE_URL, // ✅ Only include here if safe to expose!
+  },
+
+  // Server-only environment variables
+  serverRuntimeConfig: {
+    dbUrl: process.env.DATABASE_URL, // ✅ For runtime access server-side
+  },
+
   images: {
     domains: [
       'via.placeholder.com',
@@ -15,23 +29,6 @@ const nextConfig = {
     minimumCacheTTL: 60,
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-  },
-
-  reactStrictMode: true,
-
-  // Public environment variables (exposed to client-side)
-  env: {
-    API_BASE_URL: process.env.API_BASE_URL,
-    STRIPE_PUBLIC_KEY: process.env.STRIPE_PUBLIC_KEY,
-  },
-
-  // Server-only environment variables
-  serverRuntimeConfig: {
-    DATABASE_URL: process.env.DATABASE_URL,
-  },
-
-  publicRuntimeConfig: {
-    // Put safe public variables here if needed
   },
 
   webpack: (config) => {
