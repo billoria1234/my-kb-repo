@@ -3,25 +3,25 @@ import prisma from '@/lib/db'
 
 export async function GET() {
   try {
-    // Connect to the database (optional, Prisma auto-connects)
-    await prisma.$connect()
+    const products = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        images: true
+      }
+    })
 
-    // Fetch all products
-    const products = await prisma.product.findMany()
+    if (!products) {
+      return NextResponse.json([], { status: 200 })
+    }
 
-    // Return the products as JSON
-    return NextResponse.json(products)
+    return NextResponse.json(products, { status: 200 })
   } catch (error) {
-    console.error('❌ Failed to fetch products:', error)
+    console.error('❌ Database Error:', error)
     return NextResponse.json(
-      {
-        error: 'Failed to fetch products',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
+      { error: 'Failed to fetch products' },
       { status: 500 }
     )
-  } finally {
-    // Disconnect from database to free resources
-    await prisma.$disconnect()
   }
 }
