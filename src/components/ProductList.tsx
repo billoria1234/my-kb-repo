@@ -19,13 +19,13 @@ export default function ProductList() {
     const fetchProducts = async () => {
       try {
         const res = await fetch('/api/products')
-        
+
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`)
         }
 
         const data = await res.json()
-        
+
         if (!Array.isArray(data)) {
           throw new Error('Invalid data format received')
         }
@@ -82,11 +82,14 @@ function ErrorDisplay({ message }: { message: string }) {
 
 function ProductCard({ product }: { product: Product }) {
   return (
-    <Link href={`/products/${product.id}`} className="border p-4 rounded shadow hover:shadow-md transition-shadow">
+    <Link
+      href={`/products/${product.id}`}
+      className="border p-4 rounded shadow hover:shadow-md transition-shadow block"
+    >
       <img
         src={product.images?.[0] || '/placeholder-product.jpg'}
         alt={product.name}
-        className="w-full h-40 object-cover mb-2"
+        className="w-full h-40 object-cover mb-2 rounded"
       />
       <h2 className="font-bold">{product.name}</h2>
       <p>${product.price.toFixed(2)}</p>

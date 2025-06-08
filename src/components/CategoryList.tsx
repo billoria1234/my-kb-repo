@@ -2,45 +2,38 @@
 
 import { useEffect, useState } from 'react';
 
-type Category = {
-  id: string;
-  name: string;
-};
+type Category = { id: string; name: string };
 
 export default function CategoryList() {
-  const [categories, setCategories] = useState<Category[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    async function load() {
       try {
         const res = await fetch('/api/categories');
-        if (!res.ok) throw new Error('Failed to fetch categories');
         const data = await res.json();
+        if (!res.ok || !Array.isArray(data)) {
+          throw new Error(data.error || 'Invalid data');
+        }
         setCategories(data);
-      } catch (err) {
-        console.error('Error fetching categories:', err);
-        setError('Failed to load categories');
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message);
       }
-    };
-
-    fetchCategories();
+    }
+    load();
   }, []);
 
-  if (error) return <p className="text-red-600">{error}</p>;
+  if (error) return <p className="text-red-600">Error: {error}</p>;
+  if (categories.length === 0) return <p>No categories found.</p>;
 
   return (
-    <div className="mb-4">
-      <h2 className="text-lg font-bold mb-2">Categories</h2>
-      {Array.isArray(categories) ? (
-        categories.map((cat) => (
-          <div key={cat.id} className="py-1 px-2 bg-gray-100 rounded mb-1">
-            {cat.name}
-          </div>
-        ))
-      ) : (
-        <p>Loading categories...</p>
-      )}
+    <div>
+      <h2>Categories</h2>
+      {categories.map(c => (
+        <div key={c.id}>{c.name}</div>
+      ))}
     </div>
   );
 }

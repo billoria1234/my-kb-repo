@@ -10,7 +10,8 @@
     "lint": "next lint",
     "seed": "prisma db seed",
     "seed:direct": "ts-node prisma/seed.ts",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
