@@ -1,4 +1,3 @@
-// File: src/components/ProductList.tsx
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -25,7 +24,9 @@ export default function ProductList() {
         }
 
         const data = await res.json();
-        setProducts(data);
+        console.log('Products fetched:', data);
+
+        setProducts(Array.isArray(data) ? data : []);
       } catch (err: any) {
         console.error('Error fetching products:', err);
         setError(err.message || 'Something went wrong');
@@ -42,17 +43,21 @@ export default function ProductList() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {products.map((product) => (
-        <div key={product.id} className="border p-4 rounded shadow">
-          <img
-            src={product.images?.[0] || 'https://via.placeholder.com/300x200'}
-            alt={product.name}
-            className="w-full h-40 object-cover mb-2"
-          />
-          <h2 className="font-bold">{product.name}</h2>
-          <p>₹{product.price}</p>
-        </div>
-      ))}
+      {Array.isArray(products) ? (
+        products.map((product) => (
+          <div key={product.id} className="border p-4 rounded shadow">
+            <img
+              src={product.images?.[0] || 'https://via.placeholder.com/300x200'}
+              alt={product.name}
+              className="w-full h-40 object-cover mb-2"
+            />
+            <h2 className="font-bold">{product.name}</h2>
+            <p>₹{product.price}</p>
+          </div>
+        ))
+      ) : (
+        <p>No products found.</p>
+      )}
     </div>
   );
 }
