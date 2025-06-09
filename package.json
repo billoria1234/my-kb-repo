@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "dev": "next dev",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "start:open": "next start & start http://localhost:3000",
     "lint": "next lint",
     "seed": "prisma db seed",
     "seed:direct": "ts-node prisma/seed.ts",
     "generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "vercel-build": "npm run build"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
