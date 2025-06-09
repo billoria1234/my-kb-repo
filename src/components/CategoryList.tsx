@@ -13,10 +13,10 @@ export default function CategoryList() {
       try {
         const res = await fetch('/api/categories');
         const data = await res.json();
-        if (!res.ok || !Array.isArray(data)) {
-          throw new Error(data.error || 'Invalid data');
+        if (!res.ok || !Array.isArray(data.categories)) {
+          throw new Error(data.error || 'Invalid data format from server');
         }
-        setCategories(data);
+        setCategories(data.categories);
       } catch (err: any) {
         console.error(err);
         setError(err.message);
@@ -31,7 +31,7 @@ export default function CategoryList() {
   return (
     <div>
       <h2>Categories</h2>
-      {categories.map(c => (
+      {categories.map((c) => (
         <div key={c.id}>{c.name}</div>
       ))}
     </div>

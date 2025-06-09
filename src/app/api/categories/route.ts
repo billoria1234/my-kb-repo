@@ -1,4 +1,3 @@
-// app/api/categories/route.ts
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
@@ -6,7 +5,6 @@ export async function GET() {
   try {
     const categories = await prisma.category.findMany();
 
-    // Ensure it's an array
     if (!Array.isArray(categories)) {
       console.warn('⚠️ Categories is not an array:', categories);
       return NextResponse.json([], { status: 200 });

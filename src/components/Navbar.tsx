@@ -21,10 +21,25 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch('/api/categories')
-      .then((res) => res.json())
-      .then(setCategories)
-      .catch(console.error);
+    async function fetchCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        const data = await res.json();
+
+        const catList = Array.isArray(data)
+          ? data
+          : Array.isArray(data.categories)
+          ? data.categories
+          : [];
+
+        setCategories(catList);
+      } catch (error) {
+        console.error('Error loading categories:', error);
+        setCategories([]);
+      }
+    }
+
+    fetchCategories();
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -36,12 +51,10 @@ export default function Navbar() {
     <nav className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link href="/" className="text-2xl font-bold text-blue-600">
             MediCare
           </Link>
 
-          {/* Desktop search */}
           <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-6">
             <div className="relative w-full">
               <input
@@ -60,7 +73,6 @@ export default function Navbar() {
             </div>
           </form>
 
-          {/* Desktop nav links */}
           <div className="hidden md:flex items-center space-x-6">
             {session ? (
               <button
@@ -79,7 +91,6 @@ export default function Navbar() {
                 </Link>
               </>
             )}
-
             <Link href="/cart" className="flex items-center text-gray-700 hover:text-blue-600">
               <ShoppingCart size={20} /><span className="ml-1">Cart</span>
             </Link>
@@ -88,7 +99,6 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile menu button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="md:hidden text-gray-700 hover:text-blue-600"
@@ -97,7 +107,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Category bar (desktop) */}
+        {/* Desktop Category Bar */}
         <div className="hidden md:flex justify-center space-x-6 py-2 border-t border-gray-100">
           {categories.map((cat) => (
             <Link
@@ -115,11 +125,10 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu panel */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-white border-t border-gray-200">
           <div className="px-4 py-3">
-            {/* Mobile search */}
             <form onSubmit={handleSearch} className="mb-4">
               <div className="relative">
                 <input
@@ -138,7 +147,6 @@ export default function Navbar() {
               </div>
             </form>
 
-            {/* Mobile category links */}
             <div className="space-y-2">
               {categories.map((cat) => (
                 <Link
@@ -156,7 +164,6 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Mobile auth & cart/account */}
             <div className="mt-4 pt-4 border-t border-gray-200">
               {session ? (
                 <button
